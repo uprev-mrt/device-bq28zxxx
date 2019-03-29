@@ -8,8 +8,10 @@
 #pragma once
 
 #include "Platforms/Common/mrt_platform.h"
-
-
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 //TODO find real values for these
 #define BQ28Z_REGADDR_SIZE 2  /* register address size for this device  */
 #define BQ28Z_I2C_ADDR 0xAA

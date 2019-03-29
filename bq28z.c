@@ -110,15 +110,6 @@ Bool FgReadNvmState2(uint8_t* pData, uint8_t* pChkSum);
 Bool FgReadCalData(uint8_t* pData, uint8_t* pChkSum);
 Bool FgUnsealCmd();
 
-#define TEST_MODE_OFF  0xFF
-static int testMode = TEST_MODE_OFF;
-
-char* FgInfoStr(char* pBuffer, int bufferLen)
-{
-  sprintf(pBuffer, "FUEL GAUGE DesignCap: %d mAh , TermV: %d mV , NRG: %d mWh ChgTermV: %d mV, CFG:%s\r",
-          _designCap, _termVoltage, _designNrg, _vChgTerm, IsFgConfigured() ? FactoryCfg()->fgCfgVer : "NONE");
-  return pBuffer;
-}
 
 Bool FgBatteryIsAlarmMode()
 {
@@ -372,14 +363,14 @@ Bool FuelGaugeOpen(I2C_Handle hI2C, Bool doConfig)
     _termVoltage = (pData[TERM_VOLTAGE_OFFSET] << 8) + pData[TERM_VOLTAGE_OFFSET + 1];
     _designNrg = (pData[DESIGN_NRG_OFFSET] << 8) + pData[DESIGN_NRG_OFFSET + 1];
 
-    DebugConsoleOutV("BQ27425 RECONFIG DC: %d mAh (0x%02X%02X), TV: %d mV (0x%02X%02X), NRG: %d mWh (0x%02X%02X)\r",
+    DebugConsoleOutV("BQ28Z RECONFIG DC: %d mAh (0x%02X%02X), TV: %d mV (0x%02X%02X), NRG: %d mWh (0x%02X%02X)\r",
       _designCap, pData[12], pData[13],
       _termVoltage, pData[18], pData[19],
       _designNrg, pData[14], pData[15]);
 
     FgReadNvmState2(pData, &chkSum);
     _vChgTerm = (pData[V_CHG_TERM_OFFSET] << 8) + pData[V_CHG_TERM_OFFSET + 1];
-    DebugConsoleOutV("BQ27425 VTERM: %d (0x%02X%02X)\r",   _vChgTerm, pData[4], pData[5]);
+    DebugConsoleOutV("BQ28Z VTERM: %d (0x%02X%02X)\r",   _vChgTerm, pData[4], pData[5]);
 
     // Re-read to verify
 //    FgReadCalData(pData, &chkSum);
@@ -407,7 +398,7 @@ int GetROMMode()
   i2cTransaction.writeCount = 3;
   i2cTransaction.readBuf = rxData;
   i2cTransaction.readCount = 0;
-  i2cTransaction.slaveAddress = BG27425_DEV_ADDR;
+  i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR;
 
   if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
   {
@@ -462,7 +453,7 @@ Bool EnableROMMode()
     i2cTransaction.writeCount = 3;
     i2cTransaction.readBuf = &ch;
     i2cTransaction.readCount = 0;
-    i2cTransaction.slaveAddress = BG27425_DEV_ADDR;
+    i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR;
 
     if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
     {
@@ -481,7 +472,7 @@ void WriteRom(unsigned char* pData, int len)
   i2cTransaction.writeCount = len;
   i2cTransaction.readBuf = &ch;
   i2cTransaction.readCount = 0;
-  i2cTransaction.slaveAddress = BG27425_DEV_ADDR; //ROM_MODE_I2C_ADDR;
+  i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR; //ROM_MODE_I2C_ADDR;
 
   if (I2C_transfer(_hI2C, &i2cTransaction) == 0)
   {
@@ -507,7 +498,7 @@ int CompareRom(unsigned char reg, unsigned char* pData, int len)
   i2cTransaction.writeCount = 3;
   i2cTransaction.readBuf = rxData;
   i2cTransaction.readCount = 0;
-  i2cTransaction.slaveAddress = BG27425_DEV_ADDR; //ROM_MODE_I2C_ADDR;
+  i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR; //ROM_MODE_I2C_ADDR;
 
   // Read loaded reg
   if (reg == 0)
@@ -1009,7 +1000,7 @@ Bool FgWriteRead(uint8_t* pTx, uint8_t txLen, uint8_t* pRx, uint8_t rxLen)
   i2cTransaction.writeCount = txLen;
   i2cTransaction.readBuf = pRx != NULL ? pRx : &ch;
   i2cTransaction.readCount = rxLen;
-  i2cTransaction.slaveAddress = BG27425_DEV_ADDR;
+  i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR;
 
   osi_LockObjLock(&_fgLock, OSI_WAIT_FOREVER);
 
