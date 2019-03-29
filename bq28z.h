@@ -9,15 +9,52 @@
 
 #include "Platforms/Common/mrt_platform.h"
 
+
 //TODO find real values for these
 #define BQ28Z_REGADDR_SIZE 2  /* register address size for this device  */
 #define BQ28Z_I2C_ADDR 0xAA
+
+typedef enum
+{
+  BATTERY_CHARGING,
+  BATTERY_GOOD,
+  BATTERY_LOW,
+  BATTERY_VERY_LOW,
+  BATTERY_MISSING,
+  BATTERY_CRITICAL,
+} BatteryModes;
 
 /* define struct for device */
 typedef struct{
   mrt_i2c_handle_t mI2c;  //i2c_handle
 }bq28z_t;
 
+// Used by processes other than MainTask() so the fuel gauge is not 
+// read by multiple tasks
+BatteryModes FgLastBatteryStatus();
+UChar FgLastBatteryPct();
+
+BatteryModes FgBatteryStatus(Bool useCachedVal);
+Bool FgBatteryIsAlarmMode();
+
+void FgReset();
+//*****************************************************************************
+//
+// API Function prototypes
+//
+//*****************************************************************************
+extern void FgLoadGoldenImage();
+Bool FuelGaugeOpen(I2C_Handle hI2C, Bool doConfig);
+UChar FgPercentCharged();
+UShort FgBatteryMVolts();
+// Get settings in a string, bufferLen >= 64
+char* FgInfoStr(char* pBuffer, int bufferLen);
+
+int FuelGaugeClose();
+
+void FgTest(int val);
+
+void FgStatsStr(char* pBuffer, int buffLen);
 
 /**
   *@brief initialize bq28z device
