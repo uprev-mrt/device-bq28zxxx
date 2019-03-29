@@ -26,6 +26,16 @@ typedef enum
   BATTERY_CRITICAL,
 } BatteryModes;
 
+typedef struct i2C_Transaction{
+			void *writeBuf; 
+			size_t writeCount; 
+			void *readBuf;
+			size_t readCount; 
+			unsigned char slaveAddress; 
+			void *arg;
+			void *nextPtr; 
+		}I2C_Transaction;
+
 /* define struct for device */
 typedef struct{
   mrt_i2c_handle_t mI2c;  //i2c_handle
@@ -46,16 +56,12 @@ void FgReset();
 //
 //*****************************************************************************
 extern void FgLoadGoldenImage();
-bool FuelGaugeOpen(I2C_Handle hI2C, bool doConfig);
+bool FuelGaugeOpen(mrt_i2c_handle_t handle, bool doConfig);
 uint8_t FgPercentCharged();
 uint16_t FgBatteryMVolts();
-// Get settings in a string, bufferLen >= 64
-char* FgInfoStr(char* pBuffer, int bufferLen);
-
 int FuelGaugeClose();
-
 void FgTest(int val);
-
+bool I2C_transfer(mrt_i2c_handle_t handle, I2C_Transaction *transaction); 
 void FgStatsStr(char* pBuffer, int buffLen);
 
 /**
@@ -66,3 +72,5 @@ void FgStatsStr(char* pBuffer, int buffLen);
   *@return MRT_STATUS_ERROR if there was a problem
   */
 mrt_status_t bq28z_init(bq28z_t* dev, mrt_i2c_handle_t handle);
+MRT_I2C_MEM_READ(dev->mI2c, BQ28Z_I2C_ADDR, regAddr, BQ28Z_REGADDR_SIZE, data, len, 100 );
+MRT_I2C_MEM_WRITE(dev->mI2c, BQ28Z_I2C_ADDR, regAddr, BQ28Z_REGADDR_SIZE, data, len, 100 );

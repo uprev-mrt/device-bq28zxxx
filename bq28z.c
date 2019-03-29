@@ -13,7 +13,7 @@
 #define DESIGN_ENERGY 19510 // mWh
 #define CC_OFFSET -1376 // mV
 
-static I2C_Handle _hI2C = 0; 
+static mrt_i2c_handle_t handle= 0; 
 static OsiLockObj_t    _fgLock;
 static BatteryModes    _fgLastMode = BATTERY_GOOD; 
 static uint16_t _fgLastPct = 0;
@@ -110,6 +110,43 @@ bool FgReadNvmState2(uint8_t* pData, uint8_t* pChkSum);
 bool FgReadCalData(uint8_t* pData, uint8_t* pChkSum);
 bool FgUnsealCmd();
 
+/**
+  *@brief read registers from device
+  *@param dev ptr to device
+  *@param regAddr address of register
+  *@param data ptr to data to store data
+  *@param len length in bytes of data
+  */
+static mrt_i2c_status_t bq28z_read_regs(bq28z_t* dev, uint16_t regAddr, uint8_t* data, int len)
+{
+
+  MRT_I2C_MEM_READ(dev->mI2c, BQ28Z_I2C_ADDR, regAddr, BQ28Z_REGADDR_SIZE, data, len, 100 );
+
+  return MRT_STATUS_OK;
+}
+
+/**
+  *@brief write registers to device
+  *@param dev ptr to device
+  *@param regAddr address of register
+  *@param data ptr to data to write
+  *@param len length in bytes of data
+  */
+static mrt_i2c_status_t bq28z_write_regs(bq28z_t* dev, uint16_t regAddr,const uint8_t* data, int len)
+{
+  MRT_I2C_MEM_WRITE(dev->mI2c, BQ28Z_I2C_ADDR, regAddr, BQ28Z_REGADDR_SIZE, data, len, 100 );
+
+  return MRT_STATUS_OK;
+}
+
+mrt_status_t bq28z_init(bq28z_t* dev, mrt_i2c_handle_t handle)
+{
+  //set handle for i2c
+  dev->mI2c = handle;
+
+  return MRT_STATUS_OK;
+}
+
 
 bool FgBatteryIsAlarmMode()
 {
@@ -127,18 +164,14 @@ uint8_t FgLastBatteryPct()
 {
   return _fgLastPct;
 }
-
+bool I2C_transfer(mrt_i2c_handle_t handle, I2C_Transaction *transaction)
+{
+  return true; 
+}
 BatteryModes FgBatteryStatus(bool useCachedVal)
 {
   BatteryModes mode = BATTERY_GOOD;
-  // if charging
-  //if (GPIO_read(BATT_CHG_N) == 0)
-  //{
-  //  // de-bounce
-  //  osi_Sleep(25);
-  //  if (GPIO_read(BATT_CHG_N) == 0)
-  //    mode = BATTERY_CHARGING;
-  //}
+
   if (Gpio_BatteryCharging())
     mode = BATTERY_CHARGING;
   // If requesting a new reading
@@ -191,7 +224,7 @@ uint8_t CalcCheckSum(uint8_t* data, uint8_t len)
 
 //****************************************************************************
 //
-//! Initialize the PCA8575 device with defaults
+//! Initialize the device with defaults
 //!
 //! \param None
 //!
@@ -201,17 +234,18 @@ uint8_t CalcCheckSum(uint8_t* data, uint8_t len)
 //! \return 0: Success, < 0: Failure.
 //
 //****************************************************************************
-bool FuelGaugeOpen(I2C_Handle hI2C, bool doConfig)
+
+bool FuelGaugeOpen(mrt_i2c_handle_t handle, bool doConfig)
 {
   uint8_t pData[32];
-
+  mrt_i2c_handle_t _handle; 
   unsigned char txData[2], rxData[4];
   memset(pData, 0, 32);
   memset(rxData, 0, 4);
   int needsReset = 0;
   uint8_t chkSum;
-  // Save the handle
-  _hI2C = hI2C;
+  //save handle
+  _handle = handle;
   // Create the thread safe lock
   osi_LockObjCreate(&_fgLock);
 
@@ -400,14 +434,14 @@ int GetROMMode()
   i2cTransaction.readCount = 0;
   i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR;
 
-  if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+  if (I2C_transfer(_handle, &i2cTransaction) != 0)
   {
     osi_Sleep(1000);
     // Now try to read
     i2cTransaction.writeCount = 1;
     i2cTransaction.readCount = 2;
 
-    if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+    if (I2C_transfer(_handle, &i2cTransaction) != 0)
     {
       DebugConsoleOutV("BQ27425 Type: 0x%02X%02X, Normal Mode\r", rxData[1], rxData[0]);
       return 0;
@@ -419,7 +453,7 @@ int GetROMMode()
   i2cTransaction.readBuf = rxData;
   i2cTransaction.readCount = 0;
   i2cTransaction.slaveAddress = ROM_MODE_I2C_ADDR;
-  if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+  if (I2C_transfer(_handle, &i2cTransaction) != 0)
   {
     osi_Sleep(1000);
     // Now try to read
@@ -455,7 +489,7 @@ bool EnableROMMode()
     i2cTransaction.readCount = 0;
     i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR;
 
-    if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+    if (I2C_transfer(_handle, &i2cTransaction) != 0)
     {
       osi_Sleep(1000);
       return  GetROMMode() == 0;
@@ -474,7 +508,7 @@ void WriteRom(unsigned char* pData, int len)
   i2cTransaction.readCount = 0;
   i2cTransaction.slaveAddress = BQ28Z_I2C_ADDR; //ROM_MODE_I2C_ADDR;
 
-  if (I2C_transfer(_hI2C, &i2cTransaction) == 0)
+  if (I2C_transfer(_handle, &i2cTransaction) == 0)
   {
     //DebugOut("FUEL GAUGE: CFG: WriteROM failed\r");
   }
@@ -506,7 +540,7 @@ int CompareRom(unsigned char reg, unsigned char* pData, int len)
     //DebugConsoleOutV("BQ27425 Comapare last REG\r");
     i2cTransaction.writeCount = 1;
     i2cTransaction.readCount = len;
-    if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+    if (I2C_transfer(_handle, &i2cTransaction) != 0)
     {
       // Compare 
       for (i = 0; i < len; i++)
@@ -526,14 +560,14 @@ int CompareRom(unsigned char reg, unsigned char* pData, int len)
     i2cTransaction.writeCount = 1;
     i2cTransaction.readCount = len;
 
-    if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+    if (I2C_transfer(_handle, &i2cTransaction) != 0)
     {
       //osi_Sleep(1000);
       // Now try to read
       //i2cTransaction.writeCount = 1;
       //i2cTransaction.readCount = len;
 
-      //if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+      if (I2C_transfer(_handle, &i2cTransaction) != 0)
       {
         // Compare 
         for (i = 0; i < len; i++)
@@ -1022,43 +1056,5 @@ bool FgWriteRead(uint8_t* pTx, uint8_t txLen, uint8_t* pRx, uint8_t rxLen)
 int FuelGaugeClose()
 {
     return 0;
-}
-
-
-/**
-  *@brief read registers from device
-  *@param dev ptr to device
-  *@param regAddr address of register
-  *@param data ptr to data to store data
-  *@param len length in bytes of data
-  */
-static mrt_i2c_status_t bq28z_read_regs(bq28z_t* dev, uint16_t regAddr, uint8_t* data, int len)
-{
-
-  MRT_I2C_MEM_READ(dev->mI2c, BQ28Z_I2C_ADDR, regAddr, BQ28Z_REGADDR_SIZE, data, len, 100 );
-
-  return MRT_STATUS_OK;
-}
-
-/**
-  *@brief write registers to device
-  *@param dev ptr to device
-  *@param regAddr address of register
-  *@param data ptr to data to write
-  *@param len length in bytes of data
-  */
-static mrt_i2c_status_t bq28z_write_regs(bq28z_t* dev, uint16_t regAddr,const uint8_t* data, int len)
-{
-  MRT_I2C_MEM_WRITE(dev->mI2c, BQ28Z_I2C_ADDR, regAddr, BQ28Z_REGADDR_SIZE, data, len, 100 );
-
-  return MRT_STATUS_OK;
-}
-
-mrt_status_t bq28z_init(bq28z_t* dev, mrt_i2c_handle_t handle)
-{
-  //set handle for i2c
-  dev->mI2c = handle;
-
-  return MRT_STATUS_OK;
 }
 
