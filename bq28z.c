@@ -103,15 +103,15 @@ typedef struct
 //****************************************************************************
 //                      LOCAL FUNCTION DEFINITIONS                          
 //****************************************************************************
-Bool FgControlCmd(uint8_t subCmd, uint8_t* pRx, uint8_t rxSize);
-Bool FgWriteRead(uint8_t* pTx, uint8_t txLen, uint8_t* pRx, uint8_t rxLen);
-Bool FgReadNvmState1(uint8_t* pData, uint8_t* pChkSum);
-Bool FgReadNvmState2(uint8_t* pData, uint8_t* pChkSum);
-Bool FgReadCalData(uint8_t* pData, uint8_t* pChkSum);
-Bool FgUnsealCmd();
+bool FgControlCmd(uint8_t subCmd, uint8_t* pRx, uint8_t rxSize);
+bool FgWriteRead(uint8_t* pTx, uint8_t txLen, uint8_t* pRx, uint8_t rxLen);
+bool FgReadNvmState1(uint8_t* pData, uint8_t* pChkSum);
+bool FgReadNvmState2(uint8_t* pData, uint8_t* pChkSum);
+bool FgReadCalData(uint8_t* pData, uint8_t* pChkSum);
+bool FgUnsealCmd();
 
 
-Bool FgBatteryIsAlarmMode()
+bool FgBatteryIsAlarmMode()
 {
   return ((FgBatteryStatus(TRUE) == BATTERY_VERY_LOW) || (FgBatteryStatus(TRUE) == BATTERY_MISSING) || (FgBatteryStatus(TRUE) == BATTERY_CRITICAL));
 }
@@ -128,7 +128,7 @@ uint8_t FgLastBatteryPct()
   return _fgLastPct;
 }
 
-BatteryModes FgBatteryStatus(Bool useCachedVal)
+BatteryModes FgBatteryStatus(bool useCachedVal)
 {
   BatteryModes mode = BATTERY_GOOD;
   // if charging
@@ -201,7 +201,7 @@ uint8_t CalcCheckSum(uint8_t* data, uint8_t len)
 //! \return 0: Success, < 0: Failure.
 //
 //****************************************************************************
-Bool FuelGaugeOpen(I2C_Handle hI2C, Bool doConfig)
+bool FuelGaugeOpen(I2C_Handle hI2C, bool doConfig)
 {
   uint8_t pData[32];
 
@@ -435,7 +435,7 @@ int GetROMMode()
   return -1;
 } // GetROMMode()
 
-Bool EnableROMMode()
+bool EnableROMMode()
 {
   I2C_Transaction i2cTransaction;
   unsigned char tx[4];
@@ -571,7 +571,7 @@ void FgLoadGoldenImage()
   int status;
   char line[MAX_LINE + 1];
   int tmpInt;
-  Bool error = FALSE;
+  bool error = FALSE;
 
   fgVerStr[0] = 0;
 
@@ -797,7 +797,7 @@ void FgStatsStr(char* pBuffer, int buffLen)
 }
 
 // As implemented must be called after
-Bool FgReadCalData(uint8_t* pData, uint8_t* pChkSum)
+bool FgReadCalData(uint8_t* pData, uint8_t* pChkSum)
 {
   int i = 0;
   uint8_t txData[4];
@@ -837,7 +837,7 @@ Bool FgReadCalData(uint8_t* pData, uint8_t* pChkSum)
 }
 
 // Read the 1st 32 bytes of State NVM (Block 82)
-Bool FgReadNvmState1(uint8_t* pData, uint8_t* pChkSum)
+bool FgReadNvmState1(uint8_t* pData, uint8_t* pChkSum)
 {
 #define CMD_DELAY_MS 50
   int i = 0;
@@ -879,7 +879,7 @@ Bool FgReadNvmState1(uint8_t* pData, uint8_t* pChkSum)
 }
 
 // Read the 2nd 32 bytes of State NVM (Block 82)
-Bool FgReadNvmState2(uint8_t* pData, uint8_t* pChkSum)
+bool FgReadNvmState2(uint8_t* pData, uint8_t* pChkSum)
 {
   int i = 0;
   uint8_t txData[4];
@@ -919,7 +919,7 @@ Bool FgReadNvmState2(uint8_t* pData, uint8_t* pChkSum)
 }
 
 // Reads the sealed key
-Bool FgReadKey(uint8_t* pData)
+bool FgReadKey(uint8_t* pData)
 {
   int i = 0;
   uint8_t txData[4];
@@ -961,7 +961,7 @@ Bool FgReadKey(uint8_t* pData)
 
 
 // pRx results are LSB first
-Bool FgControlCmd(uint8_t subCmd, uint8_t* pRx, uint8_t rxSize)
+bool FgControlCmd(uint8_t subCmd, uint8_t* pRx, uint8_t rxSize)
 {
   uint8_t tx[3];
 
@@ -974,7 +974,7 @@ Bool FgControlCmd(uint8_t subCmd, uint8_t* pRx, uint8_t rxSize)
   return FgWriteRead(tx, 1, pRx, rxSize);
 }
 
-Bool FgUnsealCmd()
+bool FgUnsealCmd()
 {
   uint8_t rx;
   uint8_t tx[5];
@@ -989,9 +989,9 @@ Bool FgUnsealCmd()
 
   return FgWriteRead(tx, 1, &rx, 1);
 }
-Bool FgWriteRead(uint8_t* pTx, uint8_t txLen, uint8_t* pRx, uint8_t rxLen)
+bool FgWriteRead(uint8_t* pTx, uint8_t txLen, uint8_t* pRx, uint8_t rxLen)
 {
-  Bool res = FALSE;
+  bool res = FALSE;
   uint8_t ch;
   I2C_Transaction i2cTransaction;
 

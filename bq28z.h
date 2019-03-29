@@ -34,10 +34,10 @@ typedef struct{
 // Used by processes other than MainTask() so the fuel gauge is not 
 // read by multiple tasks
 BatteryModes FgLastBatteryStatus();
-UChar FgLastBatteryPct();
+uint8_t FgLastBatteryPct();
 
-BatteryModes FgBatteryStatus(Bool useCachedVal);
-Bool FgBatteryIsAlarmMode();
+BatteryModes FgBatteryStatus(bool useCachedVal);
+bool FgBatteryIsAlarmMode();
 
 void FgReset();
 //*****************************************************************************
@@ -46,9 +46,9 @@ void FgReset();
 //
 //*****************************************************************************
 extern void FgLoadGoldenImage();
-Bool FuelGaugeOpen(I2C_Handle hI2C, Bool doConfig);
-UChar FgPercentCharged();
-UShort FgBatteryMVolts();
+bool FuelGaugeOpen(I2C_Handle hI2C, bool doConfig);
+uint8_t FgPercentCharged();
+uint16_t FgBatteryMVolts();
 // Get settings in a string, bufferLen >= 64
 char* FgInfoStr(char* pBuffer, int bufferLen);
 
