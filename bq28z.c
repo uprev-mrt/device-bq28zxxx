@@ -1038,7 +1038,7 @@ bool FgWriteRead(uint8_t* pTx, uint8_t txLen, uint8_t* pRx, uint8_t rxLen)
 
   osi_LockObjLock(&_fgLock, OSI_WAIT_FOREVER);
 
-  if (I2C_transfer(_hI2C, &i2cTransaction) != 0)
+  if (I2C_transfer(_handle, &i2cTransaction) != 0)
   {
     //DebugConsoleOut("BQ27425 I2C write OK\n\r");
     res = TRUE;
