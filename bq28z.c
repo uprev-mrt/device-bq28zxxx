@@ -125,7 +125,7 @@ uint8_t FgLastBatteryPct()
 int FgBatteryStatus(int bits)
 {
   uint8_t *data;
-  int length;
+  uint16_t* length;
   int batteryData; 
   bool status; 
   status = bq28z_read_regs(dev->mI2c, BATTERY_STATUS, data, length);
@@ -145,7 +145,7 @@ void FgReset()
 
 uint8_t FgReadByteReg(uint8_t reg)
 {
-  int length; 
+  uint16_t* length; 
   uint8_t* data;
   status = bq28z_read_regs(dev->mI2c, reg, data, length);
   if(status)
