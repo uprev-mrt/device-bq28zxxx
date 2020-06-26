@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BQ28Z Device</title>
+</head>
+<body>
+<div class="content">
+<h1>BQ28Z Device</h1>
+<ul>
+  <li> Generated with <a href="https://github.com/uprev-mrt/mrtutils/wiki/mrt-device">MrT Device Utility</a> </li>
+  <li> Bus:  I2C</li>
+  <li>Datasheet: <a href="http://www.ti.com/lit/ds/symlink/bq28z610.pdf">http://www.ti.com/lit/ds...</a> </li>
+  <li> DigiKey: <a href="https://www.digikey.com/products/en?KeyWords=296-43394-1-ND">296-43394-1-ND</a></li>
+  <li> I2C Address: 0xAA</li>
+</ul>
+<hr/>
+<h2>Description: </h2>
+<p>Battery Fuel Gauge</p>
+<!--*user-block-description-start*-->
+
+<!--*user-block-description-end*-->
+
+<br/>
+
+<div class="regmap" align="center">
+<hr class="section">
+<h2 class="right"> Register Map</h2>
+<div align="right" width="100%">
+  Configuration:
+  <select id="cfgSelect" onchange="setConfig(this)"> 
+    <option value="none">None</option>
+  </select>
+</div>
+<hr class="thick">
+
+
+  <table class="fields" id="regMap" width="95%">
+
+  </table>
+</div>
+
+
+</div>
+<script>
+  
+  var device = {"name": "BQ28Z", "regs": {"DUMMY": {"name": "DUMMY", "addr": 0, "type": "uint16", "size": 16, "perm": "R", "default": 57005, "hasDefault": true, "desc": "dummy register", "fields": {"BIT0": {"mask": 1, "size": 1, "offset": 0, "desc": "creates a flag at bit 0 of the DUMMY register", "vals": []}, "BIT1": {"mask": 2, "size": 1, "offset": 1, "desc": "creates a flag at bit 1 of the DUMMY register", "vals": []}, "REMAINING": {"mask": 65532, "size": 14, "offset": 2, "desc": "creates a 14 bit field using the remaing bits", "vals": [{"name": "MIN", "val": 0, "desc": "creates a macro for the minimum 14 bit value"}, {"name": "MAX", "val": 16383, "desc": "creates a macro for the maximum 14 bit value"}]}}}, "ManufacturerAccess_ControlStatus": {"name": "ManufacturerAccess_ControlStatus", "addr": 0, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "Control Register", "fields": {"SECURITY_Mode": {"mask": 24576, "size": 2, "offset": 13, "desc": "Security Mode", "vals": [{"name": "Reserved", "val": 0, "desc": "Reserved"}, {"name": "Full_Access", "val": 1, "desc": "Full Access"}, {"name": "Unsealed", "val": 2, "desc": "Unsealed"}, {"name": "Sealed", "val": 3, "desc": "Sealed"}]}, "AUTHCALM": {"mask": 4096, "size": 1, "offset": 12, "desc": "Automatic Calibration Mode", "vals": [{"name": "Enabled", "val": 1, "desc": "Enabled"}, {"name": "Disabled", "val": 0, "desc": "Disabled"}]}, "CheckSumValid": {"mask": 512, "size": 1, "offset": 9, "desc": "Checksum Valid", "vals": [{"name": "Flash_Writes_Enabled", "val": 1, "desc": "Flash Writes are enabled"}, {"name": "Flash_Writes_Disabled", "val": 0, "desc": "Flash Writes are disabled due to low voltage or PF condition"}]}, "BTP_INT": {"mask": 128, "size": 1, "offset": 7, "desc": "Battery Trip Point Interrupt. Setting and clearing this bit depends on various conditions", "vals": [{"name": "Tripped", "val": 1, "desc": "See datasheet"}, {"name": "Untripped", "val": 0, "desc": "See datasheet"}]}, "LDMD": {"mask": 8, "size": 1, "offset": 3, "desc": "LOAD Mode", "vals": [{"name": "Constant_Power", "val": 1, "desc": "Constant Power"}, {"name": "Constant_Current", "val": 0, "desc": "Constant Current"}]}, "R_DIS": {"mask": 4, "size": 1, "offset": 2, "desc": "Resistance Updates", "vals": [{"name": "Disabled", "val": 1, "desc": "Disabled"}, {"name": "Enabled", "val": 0, "desc": "Enabled"}]}, "VOK": {"mask": 2, "size": 1, "offset": 1, "desc": "Voltage OK for QMax Update", "vals": [{"name": "Detected", "val": 1, "desc": "Detected"}, {"name": "Not_Detected", "val": 0, "desc": "Not Detected"}]}, "QMax": {"mask": 1, "size": 1, "offset": 0, "desc": "QMax Updates. This bit toggles after every QMax update.", "vals": []}}}, "AtRate": {"name": "AtRate", "addr": 2, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "Read/Write. The value is a signed integer with the negative value indicating a discharge current value. The default value is 0 and forces AtRateTimeToEmpty() to return 65535.", "fields": {"AtRate": {"mask": 65535, "size": 16, "offset": 0, "desc": "Read/Write. The value is a signed integer with the negative value indicating a discharge current value. The default value is 0 and forces AtRateTimeToEmpty() to return 65535.", "vals": []}}}, "AtRateTimeToEmpty": {"name": "AtRateTimeToEmpty", "addr": 4, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This read-only function returns an unsigned integer value to predict remaining operating time based on battery discharge at the AtRate() value in minutes with a range of 0 to 65534. A value of 65535 indicates AtRate() = 0. The gas gauge updates the AtRateTimeToEmpty() within 1 s after the system sets the AtRate() value. The gas gauge updates these parameters every 1 s. The commands are used in NORMAL mode.", "fields": {"AtRateTimeToEmpty": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns an unsigned integer value to predict remaining operating time based on battery discharge at the AtRate() value in minutes with a range of 0 to 65534. A value of 65535 indicates AtRate() = 0. The gas gauge updates the AtRateTimeToEmpty() within 1 s after the system sets the AtRate() value. The gas gauge updates these parameters every 1 s. The commands are used in NORMAL mode.", "vals": []}}}, "Temperature": {"name": "Temperature", "addr": 6, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This read-only function returns an unsigned integer value of temperature in units ( 0.1 k) measured by the gas gauge and is used for the gauging algorithm. It reports either InternalTemperature() or external thermistor temperature depending on the setting of the TEMPS bit in Pack configuration.", "fields": {"Temperature": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns an unsigned integer value of temperature in units ( 0.1 k) measured by the gas gauge and is used for the gauging algorithm. It reports either InternalTemperature() or external thermistor temperature depending on the setting of the TEMPS bit in Pack configuration.", "vals": []}}}, "Voltage": {"name": "Voltage", "addr": 8, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This read-only function returns an unsigned integer value of the measured cell pack in mV with a range of 0 12000 mV.", "fields": {"Voltage": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns an unsigned integer value of the measured cell pack in mV with a range of 0 12000 mV.", "vals": []}}}, "BatteryStatus": {"name": "BatteryStatus", "addr": 10, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "See the Flags register.", "fields": {"Error_Code": {"mask": 15, "size": 4, "offset": 0, "desc": "Error Code", "vals": [{"name": "OK", "val": 0, "desc": "OK"}, {"name": "Busy", "val": 1, "desc": "Busy"}, {"name": "Reserved_Command", "val": 2, "desc": "Reserved_Command"}, {"name": "Unsupported_Command", "val": 3, "desc": "Unsupported_Command"}, {"name": "AccessDenied", "val": 4, "desc": "AccessDenied"}, {"name": "Overflow_Underflow", "val": 5, "desc": "Overflow_Underflow"}, {"name": "BadSize", "val": 6, "desc": "BadSize"}, {"name": "UnknownError", "val": 7, "desc": "UnknownError"}]}, "FD": {"mask": 16, "size": 1, "offset": 4, "desc": "Fully Discharged", "vals": [{"name": "Battery_OK", "val": 0, "desc": "Battery OK"}, {"name": "Battery_Fully_Depleted", "val": 1, "desc": "Battery Fully Depleted"}]}, "FC": {"mask": 32, "size": 1, "offset": 5, "desc": "Fully Charged", "vals": [{"name": "Battery_Not_Fully_Charged", "val": 0, "desc": "Battery not fully charged"}, {"name": "Battery_Fully_Charged", "val": 1, "desc": "Battery fully charged"}]}, "DSG": {"mask": 64, "size": 1, "offset": 6, "desc": "Discharging", "vals": [{"name": "Battery_Is_Charging", "val": 0, "desc": "Battery is charging"}, {"name": "Battery_Is_Discharging", "val": 1, "desc": "Battery is discharging"}]}, "INIT": {"mask": 128, "size": 1, "offset": 7, "desc": "Initialization", "vals": [{"name": "Inactive", "val": 0, "desc": "Inactive"}, {"name": "Active", "val": 1, "desc": "Active"}]}, "RTA": {"mask": 256, "size": 1, "offset": 8, "desc": "Remaining Time Alarm", "vals": [{"name": "Inactive", "val": 0, "desc": "Inactive"}, {"name": "Active", "val": 1, "desc": "Active"}]}, "RCA": {"mask": 512, "size": 1, "offset": 9, "desc": "Remaining Capacity Alarm", "vals": [{"name": "Inactive", "val": 0, "desc": "Inactive"}, {"name": "Active", "val": 1, "desc": "Active"}]}, "TDA": {"mask": 2048, "size": 1, "offset": 11, "desc": "Terminate Discharge Alarm", "vals": [{"name": "Inactive", "val": 0, "desc": "Inactive"}, {"name": "Active", "val": 1, "desc": "Active"}]}, "OTA": {"mask": 4096, "size": 1, "offset": 12, "desc": "Overtemperature Alarm", "vals": [{"name": "Inactive", "val": 0, "desc": "Inactive"}, {"name": "Active", "val": 1, "desc": "Active"}]}, "TCA": {"mask": 16384, "size": 1, "offset": 14, "desc": "Terminate Charge Alarm", "vals": [{"name": "Inactive", "val": 0, "desc": "Inactive"}, {"name": "Active", "val": 1, "desc": "Active"}]}, "OCA": {"mask": 32768, "size": 1, "offset": 15, "desc": "Overcharged Alarm", "vals": [{"name": "Inactive", "val": 0, "desc": "Inactive"}, {"name": "Active", "val": 1, "desc": "Active"}]}}}, "Current": {"name": "Current", "addr": 12, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This read-only function returns a signed integer value that is the instantaneous current flow through the sense resistor. The value is updated every 1 s. Units are mA.", "fields": {"Current": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a signed integer value that is the instantaneous current flow through the sense resistor. The value is updated every 1 s. Units are mA.", "vals": []}}}, "MaxError": {"name": "MaxError", "addr": 14, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This read-word function returns the expected margin of error", "fields": {"MaxError": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-word function returns the expected margin of error", "vals": []}}}, "RemainingCapacity": {"name": "RemainingCapacity", "addr": 16, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This read-only command returns the predicted remaining capacity based on rate (per configured Load Select) temperature present depth-of-discharge and stored impedance. Values are reported in mAh.", "fields": {"RemainingCapacity": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only command returns the predicted remaining capacity based on rate (per configured Load Select) temperature present depth-of-discharge and stored impedance. Values are reported in mAh.", "vals": []}}}, "FullChargeCapacity": {"name": "FullChargeCapacity", "addr": 18, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This read-only command returns the predicted capacity of the battery at full charge based on rate (per configured Load Select) temperature present depth-of-discharge and stored impedance. Values are reported in mAh.", "fields": {"FullChargeCapacity": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only command returns the predicted capacity of the battery at full charge based on rate (per configured Load Select) temperature present depth-of-discharge and stored impedance. Values are reported in mAh.", "vals": []}}}, "AverageCurrent": {"name": "AverageCurrent", "addr": 20, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns a signed integer value that is the average current flow through the sense resistor. The value is updated every 1 s. Units are mA.", "fields": {"AverageCurrent": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a signed integer value that is the average current flow through the sense resistor. The value is updated every 1 s. Units are mA.", "vals": []}}}, "AverageTimeToEmpty": {"name": "AverageTimeToEmpty", "addr": 22, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "Uses average current value with a time constant of 15 s for this method. A value of 65535 means the battery is not being discharged.", "fields": {"AverageTimeToEmpty": {"mask": 65535, "size": 16, "offset": 0, "desc": "Uses average current value with a time constant of 15 s for this method. A value of 65535 means the battery is not being discharged.", "vals": []}}}, "AverageTimeToFull": {"name": "AverageTimeToFull", "addr": 24, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns a unsigned integer value predicting time to reach full charge for the battery in units of minutes based on AverageCurrent(). The computation accounts for the taper current time extension from linear TTF computation based on a fixed AverageCurrent() rate of charge accumulation. A value of 65535 indicates the battery is not being charged.", "fields": {"AverageTimeToFull": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a unsigned integer value predicting time to reach full charge for the battery in units of minutes based on AverageCurrent(). The computation accounts for the taper current time extension from linear TTF computation based on a fixed AverageCurrent() rate of charge accumulation. A value of 65535 indicates the battery is not being charged.", "vals": []}}}, "StandbyCurrent": {"name": "StandbyCurrent", "addr": 26, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns a signed integer value of measured standby current through the sense resistor. The StandbyCurrent() is an adaptive measurement. Initially it will report the standby current programmed in initial standby and after several seconds in standby mode will report the measured standby. The register value is updated every 1 s when measured current is above the deadband and is less than or equal to 2 \u00d7 initial standby. The first and last values that meet these criteria are not averaged in since they may not be stable values. To approximate to a 1-min time constant each new value of StandbyCurrent() is computed by taking approximate 93% weight of the last standby current and approximate 7% of the current measured average current.", "fields": {"StandbyCurrent": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a signed integer value of measured standby current through the sense resistor. The StandbyCurrent() is an adaptive measurement. Initially it will report the standby current programmed in initial standby and after several seconds in standby mode will report the measured standby. The register value is updated every 1 s when measured current is above the deadband and is less than or equal to 2 \u00d7 initial standby. The first and last values that meet these criteria are not averaged in since they may not be stable values. To approximate to a 1-min time constant each new value of StandbyCurrent() is computed by taking approximate 93% weight of the last standby current and approximate 7% of the current measured average current.", "vals": []}}}, "StandbyTimeToEmpty": {"name": "StandbyTimeToEmpty", "addr": 28, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns a unsigned integer value predicting remaining battery life at standby rate of discharge in units of minutes. The computation uses Nominal Available Capacity (NAC) for the calculation. A value of 65535 indicates the battery is not being discharged.", "fields": {"StandbyTimeToEmpty": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a unsigned integer value predicting remaining battery life at standby rate of discharge in units of minutes. The computation uses Nominal Available Capacity (NAC) for the calculation. A value of 65535 indicates the battery is not being discharged.", "vals": []}}}, "MaxLoadCurrent": {"name": "MaxLoadCurrent", "addr": 30, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns a signed integer value in units of mA of maximum load conditions. The MaxLoadCurrent() is an adaptive measurement which is initially reported as the maximum load current programmed in initial Max Load Current register. If the measured current is ever greater than the initial Max Load Current then the MaxLoadCurrent() updates to the new current. MaxLoadCurrent() is reduced to the average of the previous value and initial Max Load Current whenever the battery is charged to full after a previous discharge to an SOC of less than 50%. This will prevent the reported value from maintaining an unusually high value.", "fields": {"MaxLoadCurrent": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a signed integer value in units of mA of maximum load conditions. The MaxLoadCurrent() is an adaptive measurement which is initially reported as the maximum load current programmed in initial Max Load Current register. If the measured current is ever greater than the initial Max Load Current then the MaxLoadCurrent() updates to the new current. MaxLoadCurrent() is reduced to the average of the previous value and initial Max Load Current whenever the battery is charged to full after a previous discharge to an SOC of less than 50%. This will prevent the reported value from maintaining an unusually high value.", "vals": []}}}, "MaxLoadTimeToEmpty": {"name": "MaxLoadTimeToEmpty", "addr": 32, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns a unsigned integer value predicting remaining battery life at the maximum discharge load current rate in units of minutes. A value of 65535 indicates that the battery is not being discharged.", "fields": {"MaxLoadTimeToEmpty": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a unsigned integer value predicting remaining battery life at the maximum discharge load current rate in units of minutes. A value of 65535 indicates that the battery is not being discharged.", "vals": []}}}, "AveragePower": {"name": "AveragePower", "addr": 34, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns a signed integer value of average power during battery charging and discharging. It is negative during discharge and positive during charge. A value of 0 indicates that the battery is not being discharged. The value is reported in units of mW.", "fields": {"AveragePower": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns a signed integer value of average power during battery charging and discharging. It is negative during discharge and positive during charge. A value of 0 indicates that the battery is not being discharged. The value is reported in units of mW.", "vals": []}}}, "BTPDischargeSet": {"name": "BTPDischargeSet", "addr": 36, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This command sets the OperationStatusA BTP_INT and the BTP_INT pin will be asserted when the RemCap drops below the set threshold in DF register.", "fields": {"BTPDischargeSet": {"mask": 65535, "size": 16, "offset": 0, "desc": "This command sets the OperationStatusA BTP_INT and the BTP_INT pin will be asserted when the RemCap drops below the set threshold in DF register.", "vals": []}}}, "BTPChargeSet": {"name": "BTPChargeSet", "addr": 38, "type": "uint16", "size": 16, "perm": "RW", "default": 0, "hasDefault": true, "desc": "This command clears the OperationStatusA BTP_INT and the BTP_INT pin will be deasserted.", "fields": {"BTPChargeSet": {"mask": 65535, "size": 16, "offset": 0, "desc": "This command clears the OperationStatusA BTP_INT and the BTP_INT pin will be deasserted.", "vals": []}}}, "InternalTemperature": {"name": "InternalTemperature", "addr": 40, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns an unsigned integer value of the measured internal temperature of the device in 0.1-k units measured by the gas gauge.", "fields": {"InternalTemperature": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns an unsigned integer value of the measured internal temperature of the device in 0.1-k units measured by the gas gauge.", "vals": []}}}, "CycleCount": {"name": "CycleCount", "addr": 42, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns an unsigned integer value of the number of cycles the battery has experienced a discharge (range 0 to 65535). One cycle occurs when accumulated discharge greater than or equal to CC threshold.", "fields": {"CycleCount": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns an unsigned integer value of the number of cycles the battery has experienced a discharge (range 0 to 65535). One cycle occurs when accumulated discharge greater than or equal to CC threshold.", "vals": []}}}, "RelativeStateOfCharge": {"name": "RelativeStateOfCharge", "addr": 44, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns an unsigned integer value of the predicted remaining battery capacity expressed as percentage of FullChargeCapacity() with a range of 0% to 100%.", "fields": {"RelativeStateOfCharge": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns an unsigned integer value of the predicted remaining battery capacity expressed as percentage of FullChargeCapacity() with a range of 0% to 100%.", "vals": []}}}, "StateOfHealth": {"name": "StateOfHealth", "addr": 46, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "This read-only function returns an unsigned integer value expressed as a percentage of the ratio of predicted FCC (25C SoH Load Rate) over the DesignCapacity(). The range is 0x00 to 0x64 for 0% to 100% respectively.", "fields": {"StateOfHealth": {"mask": 65535, "size": 16, "offset": 0, "desc": "This read-only function returns an unsigned integer value expressed as a percentage of the ratio of predicted FCC (25C SoH Load Rate) over the DesignCapacity(). The range is 0x00 to 0x64 for 0% to 100% respectively.", "vals": []}}}, "ChargeVoltage": {"name": "ChargeVoltage", "addr": 48, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "Returns the desired charging voltage in mV to the charger", "fields": {"ChargeVoltage": {"mask": 65535, "size": 16, "offset": 0, "desc": "Returns the desired charging voltage in mV to the charger", "vals": []}}}, "ChargeCurrent": {"name": "ChargeCurrent", "addr": 50, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "Returns the desired charging current in mA to the charger", "fields": {"ChargeCurrent": {"mask": 65535, "size": 16, "offset": 0, "desc": "Returns the desired charging current in mA to the charger", "vals": []}}}, "DesignCapacity": {"name": "DesignCapacity", "addr": 60, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "In SEALED and UNSEALED access This command returns the value stored in Design Capacity and is expressed in mAh. This is intended to be a theoretical or nominal capacity of a new pack but should have no bearing on the operation of the gas gauge functionality.", "fields": {"DesignCapacity": {"mask": 65535, "size": 16, "offset": 0, "desc": "In SEALED and UNSEALED access This command returns the value stored in Design Capacity and is expressed in mAh. This is intended to be a theoretical or nominal capacity of a new pack but should have no bearing on the operation of the gas gauge functionality.", "vals": []}}}, "AltManufacturerAccess": {"name": "AltManufacturerAccess", "addr": 62, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "MAC Data block command", "fields": {"AltManufacturerAccess": {"mask": 65535, "size": 16, "offset": 0, "desc": "MAC Data block command", "vals": []}}}, "MACData": {"name": "MACData", "addr": 64, "type": "uint16", "size": 16, "perm": "R", "default": 0, "hasDefault": true, "desc": "MAC Data block", "fields": {"MACData": {"mask": 65535, "size": 16, "offset": 0, "desc": "MAC Data block", "vals": []}}}, "MACDataSum": {"name": "MACDataSum", "addr": 96, "type": "uint8", "size": 8, "perm": "R", "default": 0, "hasDefault": true, "desc": "MAC Data block checksum", "fields": {"MACDataSum": {"mask": 255, "size": 8, "offset": 0, "desc": "MAC Data block checksum", "vals": []}}}, "MACDataLen": {"name": "MACDataLen", "addr": 97, "type": "uint8", "size": 8, "perm": "R", "default": 0, "hasDefault": true, "desc": "MAC Data block length", "fields": {"MACDataLen": {"mask": 255, "size": 8, "offset": 0, "desc": "MAC Data block length", "vals": []}}}}, "configs": {"Default": {"DUMMY": 57005, "ManufacturerAccess_ControlStatus": 0, "AtRate": 0, "AtRateTimeToEmpty": 0, "Temperature": 0, "Voltage": 0, "BatteryStatus": 0, "Current": 0, "MaxError": 0, "RemainingCapacity": 0, "FullChargeCapacity": 0, "AverageCurrent": 0, "AverageTimeToEmpty": 0, "AverageTimeToFull": 0, "StandbyCurrent": 0, "StandbyTimeToEmpty": 0, "MaxLoadCurrent": 0, "MaxLoadTimeToEmpty": 0, "AveragePower": 0, "BTPDischargeSet": 0, "BTPChargeSet": 0, "InternalTemperature": 0, "CycleCount": 0, "RelativeStateOfCharge": 0, "StateOfHealth": 0, "ChargeVoltage": 0, "ChargeCurrent": 0, "DesignCapacity": 0, "AltManufacturerAccess": 0, "MACData": 0, "MACDataSum": 0, "MACDataLen": 0}, "DUMMY": {}}, "currentVals": {"DUMMY": 57005, "ManufacturerAccess_ControlStatus": 0, "AtRate": 0, "AtRateTimeToEmpty": 0, "Temperature": 0, "Voltage": 0, "BatteryStatus": 0, "Current": 0, "MaxError": 0, "RemainingCapacity": 0, "FullChargeCapacity": 0, "AverageCurrent": 0, "AverageTimeToEmpty": 0, "AverageTimeToFull": 0, "StandbyCurrent": 0, "StandbyTimeToEmpty": 0, "MaxLoadCurrent": 0, "MaxLoadTimeToEmpty": 0, "AveragePower": 0, "BTPDischargeSet": 0, "BTPChargeSet": 0, "InternalTemperature": 0, "CycleCount": 0, "RelativeStateOfCharge": 0, "StateOfHealth": 0, "ChargeVoltage": 0, "ChargeCurrent": 0, "DesignCapacity": 0, "AltManufacturerAccess": 0, "MACData": 0, "MACDataSum": 0, "MACDataLen": 0}, "smallestReg": 8, "largestReg": 16};
+
+  var sel =  document.getElementById("cfgSelect");
+
+  for(var k in device.configs){
+    var option = document.createElement("option");
+    option.text = k;
+    option.Value = k;
+    sel.add(option);
+  }
+
+  function checkBit(reg, bit)
+{
+  let resp = {
+    field: {},
+    len: 0,
+    cont : false
+  };
+
+  let next = 1000;
+  bit -=1
+  for(let name in reg.fields)
+  {
+    let field = reg.fields[name];
+    let start = field.offset + (field.size -1);
+    let end = field.offset;
+
+    if(bit == start) //we are at the start of the field 
+    {
+      field.name = name;
+      resp.field = field;
+      resp.len = field.size;
+      resp.cont = false;
+      return resp;
+    }
+    else if( (bit < start) && (bit >= end)) //we are mid-field
+    {
+      field.name = name;
+      resp.field = field;
+      resp.len = field.size - (bit - end);
+      resp.cont = true;
+      return resp;
+    }
+
+    if( (bit > start) && ((bit - start ) < next))
+      next = bit - start;
+  }
+
+  resp.len = next;
+  resp.field = null;
+  return resp;
+}
+
+
+function buildRegMap(tableId, dev)
+{
+
+  let table = document.getElementById(tableId);
+
+  let head = table.insertRow();
+
+  let headcell = document.createElement("th");
+  headcell.textContent = "Register";
+  headcell.setAttribute("width", "10%");
+  head.appendChild(headcell);
+  headcell = document.createElement("th");
+  headcell.textContent ="Addr";
+  headcell.setAttribute("width", "4%");
+  head.appendChild(headcell);
+  headcell = document.createElement("th");
+  headcell.textContent ="RW";
+  headcell.setAttribute("width", "3%");
+  head.appendChild(headcell);
+  let cellWidth = 83 / dev.smallestReg;
+  for(var n = dev.smallestReg; n > 0; n--)
+  {
+    headcell = document.createElement("th");
+    headcell.textContent = (n -1).toString();
+    headcell.setAttribute("width", cellWidth.toString() + "%");
+    head.appendChild(headcell);
+  }
+
+  for(let name in dev.regs)
+  {
+    let reg = dev.regs[name];
+    let rowSpan = reg.size / dev.smallestReg;
+    let row = table.insertRow();
+    let bit = reg.size;
+
+    let head = document.createElement("th");
+    let access = document.createElement("th");
+    let regAddr = document.createElement("th");
+    let headAnch = document.createElement("a");
+    headAnch.textContent = reg.name
+    head.setAttribute("rowspan",rowSpan);
+    regAddr.textContent = "x"+reg.addr.toString(16).padStart(4,"0")
+    regAddr.setAttribute("rowspan", rowSpan);
+    access.textContent =reg.perm;
+    access.setAttribute("rowspan",rowSpan);
+    headAnch.setAttribute("data-tt",'');
+    headAnch.setAttribute("data-tt-lbl", reg.name +"\n\n" +reg.desc );
+
+    head.appendChild(headAnch);
+    row.appendChild(head);
+    row.appendChild(regAddr);
+    row.appendChild(access);
+
+    let count = 0;
+
+    while(bit > 0)
+    {
+      var i = dev.smallestReg;
+      while( i > 0)
+      {
+        let resp = checkBit(reg, bit);
+        if(resp.len > (i))
+          resp.len = i;
+
+        let cell = document.createElement("td");
+
+        if(resp.field != null)
+        {
+          
+          cell.classList.add("bit");
+          cell.setAttribute("id", reg.name + "_bit_"+ (bit -1).toString());
+          let fieldName = resp.field.name;
+          if(resp.len == 1)
+          {
+            fieldName = fieldName.substring(0,5) + "..";
+          }
+
+          let fieldDiv = document.createElement("div");
+          fieldDiv.classList.add("field");
+          fieldDiv.setAttribute("style", "margin-right:-" + ((resp.len -1) * 100).toString() +"%;");
+
+          let fieldAnch = document.createElement("a");
+
+          if( !resp.cont) //this is a new field starting
+          {
+            cell.classList.add("first");
+            fieldAnch.textContent = fieldName
+            if(resp.field.size > resp.len)
+              fieldAnch.textContent +="[" + (resp.field.size -1).toString() +":" + (resp.field.size - resp.len).toString() +"]";
+          }
+          else 
+          {
+            fieldAnch.textContent = resp.field.name 
+            if(resp.field.size > resp.len)
+              fieldAnch.textContent += "[" + ( resp.len -1).toString() +":" + (0).toString() +"]";
+          }
+
+          fieldAnch.setAttribute("data-tt",'');
+          fieldAnch.setAttribute("data-tt-lbl", resp.field.name +"\n\n" +resp.field.desc );
+          let valStr ="\n";
+          resp.field.vals.forEach(val => {
+            valStr+= "b"+val.val.toString(2).padStart(resp.field.size,"0") + " : " + val.desc +"\n";
+          });
+          fieldAnch.setAttribute("data-tt-msg", valStr);
+
+          fieldDiv.appendChild(fieldAnch);
+          cell.appendChild(fieldDiv);
+          row.appendChild(cell);
+
+          for(var a =1 ; a < (resp.len); a++)
+          {
+            cell = document.createElement("td");
+            cell.classList.add("bit");
+            cell.setAttribute("id", name + "_bit_"+ (bit -(a+1)).toString());
+            row.appendChild(cell);
+          }
+
+        }
+        else
+        {
+          cell.classList.add("empty");
+          cell.setAttribute("colspan", resp.len);
+          cell.textContent=".";
+          row.appendChild(cell);
+        }
+
+        i -= resp.len;
+        bit-= resp.len;
+      }
+      if(bit > 0 )
+        row = table.insertRow();
+    }
+  }
+}
+  
+function showSettings(){
+    for(var k in device.currentVals){
+      var v = device.currentVals[k];
+      var bit = device.largestReg - 1; //0 based
+      var mask =0;
+      while(bit >= 0)
+      {
+        mask = (v >> bit) & 1;
+        var element = document.getElementById(k + "_bit_" + bit);
+        
+        if(element)
+        {
+          if(mask)
+          {
+            element.classList.add("one");
+            element.classList.remove("zero");
+          }
+          else
+          {
+            element.classList.remove("one");
+            element.classList.add("zero");
+          }
+
+        }
+
+        bit--;
+      }
+
+    }
+  }
+
+
+  function loadConfig(config)
+  {
+    if(config == 'none')
+    {
+      var bits = document.getElementsByClassName("bit");
+      for(var i = 0; i < bits.length; i++)
+      {
+        bits[i].classList.remove("one");
+        bits[i].classList.remove("zero");
+      }
+
+    }
+    else
+    {
+      //first load defaults 
+      for(var k in device.configs['Default'])
+      {
+        device.currentVals[k] = device.configs['Default'][k];
+      }
+
+      for(var k in device.configs[config])
+      {
+        device.currentVals[k] = device.configs[config][k];
+      }
+
+      showSettings();
+    }
+
+  }
+
+  function setConfig(selectObj)
+  {
+    var value = selectObj.value;
+    loadConfig(value);
+  }
+
+
+  buildRegMap("regMap", device);
+
+</script>
+</body>
+<style>
+table.fixed { table-layout:auto; }
+table.fixed td { overflow:visible; }
+
+table.fields{
+  table-layout:fixed;
+}
+
+body {
+  padding:0;
+}
+
+.content{
+  padding-top: 0;
+  padding-left: 1%;
+  padding-right: 1%;
+  background-color: #fff;
+}
+
+@media print {
+  .regmap {
+    page-break-inside: avoid;
+  }
+  .content{
+    width: 100%;
+  }
+  body{
+    background-color: #fff;
+  }
+}
+
+@media screen {
+  .content{
+    width: 65%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+    padding-top: 4px;
+    box-shadow: 5px 10px #AAA;
+    padding-bottom: 50px;
+  }
+
+  body{
+    background-color: #ccc;
+    padding: 0;
+  }
+}
+
+html *{
+  font-size: 1em ;
+   color: #000 ;
+  font-family: Arial ;
+}
+
+hr.section {
+  border-style: solid;
+  border-width: 2px;
+  opacity: 1;
+}
+
+
+hr.thick {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #94b2d3;
+  opacity: 1;
+}
+
+hr {
+  opacity: 0.5;
+}
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+td {
+  border: 1px solid #000000;
+  text-align: left;
+  padding-top: 6px;
+  vertical-align: top;
+  font-size: 9pt;
+  width: 1px;
+  white-space: nowrap;
+}
+
+.field{
+  text-align: center;
+  padding: 0px;
+  font-weight: bold; 
+}
+
+
+.bit{
+  border-right: 1px dotted #999;
+  border-left: 1px dotted #999;
+  overflow:visible;
+}
+
+.bit.first{
+  border-left: 1px solid black;
+}
+
+td:last-child{
+  border-right: 1px solid black;
+}
+td:first-child{
+  border-left: 1px solid black;
+}
+
+
+td.one{
+  background-color: #acdbac;
+}
+
+td.zero{
+  background-color: #e2af9e;
+}
+
+
+td.empty{
+  background-color: #cccccc;
+  color: #cccccc;
+}
+
+
+
+.desc{
+  font-size: 1.2em;
+}
+
+th {
+  border: 1px solid #000000;
+  text-align: left;
+  padding: 5px;
+  background-color: #94b2d3;
+  font-size: 9pt;
+}
+
+li.val{
+  opacity: 0.6;
+}
+
+h1{
+  font-size: 2.0em;
+}
+
+h2 
+{
+  font-size: 1.3em;
+}
+
+h2.right{
+  text-align: center;
+  font-size: 1.3em;
+}
+
+h3
+{
+  font-size: 1.8em;
+  color: #003366;
+}
+
+h4 
+{
+  font-size: 1.1em;
+  color: #003366;
+}
+
+
+.note{
+  font-style: italic;
+  opacity: 0.6;
+}
+
+a{
+  text-decoration:none;
+}
+
+a:link {
+  color: blue;
+}
+
+/* visited link */
+a:visited {
+  color: blue;
+}
+
+table.fixed tr td:last-child{
+    width:1%;
+    white-space:nowrap;
+}
+
+[data-tt] {
+  position: relative;
+  cursor: help;
+}
+
+[data-tt]:before,
+[data-tt]:after {
+  display: none;
+  position: absolute;
+  top: 0;
+}
+
+[data-tt]:before {
+  border-bottom: .6em solid #09f;
+  border-bottom: .6em solid rgba(0,153,255,0.8);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  content: "";
+  left: 20px;
+  margin-top: 1em;
+}
+
+[data-tt]:after {
+  background-color: #387aa7;
+  background-color: rgb(162, 197, 221);
+  border: 2px solid #000000;
+  border: 2px solid rgba(0, 0, 0, 1);
+  border-radius: 2px;
+  color: #000000;
+  content: attr(data-tt-lbl) "\A" attr(data-tt-msg);
+  left: 0;
+  width: 300px;
+  overflow: auto;
+  text-align: left;
+  margin-top: 1.5em;
+  padding: 5px 15px;
+  white-space: pre-wrap;
+  z-index: 100;
+}
+
+[data-tt]:hover:after,
+[data-tt]:hover:before {
+  display: block;
+  overflow: auto;
+}
+
+</style>
+</html>

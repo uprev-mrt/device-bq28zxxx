@@ -1,0 +1,275 @@
+---
+name: BQ28Z
+category: Device/Power
+requires: [RegDevice,Platform]
+description: Battery Fuel Gauge
+datasheet: http://www.ti.com/lit/ds/symlink/bq28z610.pdf
+manual: http://www.ti.com/general/docs/lit/getliterature.tsp?baseLiteratureNumber=sluua65&fileType=pdf
+mfg: Texas Instruments
+mfg_pn: BQ28Z610DRZT
+digikey_pn: 296-43394-1-ND
+
+prefix: bq28z  #prefix used in code generation
+bus: I2C    # defines the buses that can be used to access registers 
+i2c_addr: 0xAA   # defines the I2C device address (if device uses I2C)
+
+###########################################################################################################
+#                                   REGISTERS                                                             #
+###########################################################################################################
+
+registers:
+    - DUMMY:                            { addr: 0x00, type: uint16_t, perm: R,  default: 0xDEAD, desc: dummy register}                
+    - ManufacturerAccess_ControlStatus: { addr: 0x00, type: uint16_t, perm: RW, default: 0x0000, desc: Control Register}                
+    - AtRate:                           { addr: 0x02, type: int16_t,  perm: RW, default: 0x0000, desc: Read/Write. The value is a signed integer with the negative value indicating a discharge current value. The default value is 0 and forces AtRateTimeToEmpty() to return 65535.}                
+    - AtRateTimeToEmpty:                { addr: 0x04, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns an unsigned integer value to predict remaining operating time based on battery discharge at the AtRate() value in minutes with a range of 0 to 65534. A value of 65535 indicates AtRate() = 0. The gas gauge updates the AtRateTimeToEmpty() within 1 s after the system sets the AtRate() value. The gas gauge updates these parameters every 1 s. The commands are used in NORMAL mode.}                
+    - Temperature:                      { addr: 0x06, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns an unsigned integer value of temperature in units ( 0.1 k) measured by the gas gauge and is used for the gauging algorithm. It reports either InternalTemperature() or external thermistor temperature depending on the setting of the TEMPS bit in Pack configuration.}                
+    - Voltage:                          { addr: 0x08, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns an unsigned integer value of the measured cell pack in mV with a range of 0 12000 mV.}                
+    - BatteryStatus:                    { addr: 0x0A, type: uint16_t, perm: R,  default: 0x0000, desc: See the Flags register.}                
+    - Current:                          { addr: 0x0C, type: int16_t,  perm: R,  default: 0x0000, desc: This read-only function returns a signed integer value that is the instantaneous current flow through the sense resistor. The value is updated every 1 s. Units are mA.}                
+    - MaxError:                         { addr: 0x0E, type: uint8_t,  perm: R,  default: 0x0000, desc: This read-word function returns the expected margin of error, in %, in the state-of-charge calculation with a range of 1 to 100%.}
+    - RemainingCapacity:                { addr: 0x10, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only command returns the predicted remaining capacity based on rate (per configured Load Select) temperature present depth-of-discharge and stored impedance. Values are reported in mAh.}                
+    - FullChargeCapacity:               { addr: 0x12, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only command returns the predicted capacity of the battery at full charge based on rate (per configured Load Select) temperature present depth-of-discharge and stored impedance. Values are reported in mAh.}                
+    - AverageCurrent:                   { addr: 0x14, type: int16_t,  perm: R,  default: 0x0000, desc: This read-only function returns a signed integer value that is the average current flow through the sense resistor. The value is updated every 1 s. Units are mA.}                
+    - AverageTimeToEmpty:               { addr: 0x16, type: uint16_t, perm: R,  default: 0x0000, desc: Uses average current value with a time constant of 15 s for this method. A value of 65535 means the battery is not being discharged.}                
+    - AverageTimeToFull:                { addr: 0x18, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns a unsigned integer value predicting time to reach full charge for the battery in units of minutes based on AverageCurrent(). The computation accounts for the taper current time extension from linear TTF computation based on a fixed AverageCurrent() rate of charge accumulation. A value of 65535 indicates the battery is not being charged.}                
+    - StandbyCurrent:                   { addr: 0x1A, type: int16_t,  perm: R,  default: 0x0000, desc: This read-only function returns a signed integer value of measured standby current through the sense resistor. The StandbyCurrent() is an adaptive measurement. Initially it will report the standby current programmed in initial standby and after several seconds in standby mode will report the measured standby. The register value is updated every 1 s when measured current is above the deadband and is less than or equal to 2 × initial standby. The first and last values that meet these criteria are not averaged in since they may not be stable values. To approximate to a 1-min time constant each new value of StandbyCurrent() is computed by taking approximate 93% weight of the last standby current and approximate 7% of the current measured average current.}                
+    - StandbyTimeToEmpty:               { addr: 0x1C, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns a unsigned integer value predicting remaining battery life at standby rate of discharge in units of minutes. The computation uses Nominal Available Capacity (NAC) for the calculation. A value of 65535 indicates the battery is not being discharged.}                
+    - MaxLoadCurrent:                   { addr: 0x1E, type: int16_t,  perm: R,  default: 0x0000, desc: This read-only function returns a signed integer value in units of mA of maximum load conditions. The MaxLoadCurrent() is an adaptive measurement which is initially reported as the maximum load current programmed in initial Max Load Current register. If the measured current is ever greater than the initial Max Load Current then the MaxLoadCurrent() updates to the new current. MaxLoadCurrent() is reduced to the average of the previous value and initial Max Load Current whenever the battery is charged to full after a previous discharge to an SOC of less than 50%. This will prevent the reported value from maintaining an unusually high value.}                
+    - MaxLoadTimeToEmpty:               { addr: 0x20, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns a unsigned integer value predicting remaining battery life at the maximum discharge load current rate in units of minutes. A value of 65535 indicates that the battery is not being discharged.}                
+    - AveragePower:                     { addr: 0x22, type: int16_t,  perm: R,  default: 0x0000, desc: This read-only function returns a signed integer value of average power during battery charging and discharging. It is negative during discharge and positive during charge. A value of 0 indicates that the battery is not being discharged. The value is reported in units of mW.}                
+    - BTPDischargeSet:                  { addr: 0x24, type: int16_t,  perm: RW, default: 0x0000, desc: This command sets the OperationStatusA BTP_INT and the BTP_INT pin will be asserted when the RemCap drops below the set threshold in DF register.}                
+    - BTPChargeSet:                     { addr: 0x26, type: int16_t,  perm: RW, default: 0x0000, desc: This command clears the OperationStatusA BTP_INT and the BTP_INT pin will be deasserted.}                
+    - InternalTemperature:              { addr: 0x28, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns an unsigned integer value of the measured internal temperature of the device in 0.1-k units measured by the gas gauge.}                
+    - CycleCount:                       { addr: 0x2A, type: uint16_t, perm: R,  default: 0x0000, desc: This read-only function returns an unsigned integer value of the number of cycles the battery has experienced a discharge (range 0 to 65535). One cycle occurs when accumulated discharge greater than or equal to CC threshold.}                
+    - RelativeStateOfCharge:            { addr: 0x2C, type: uint8_t,  perm: R,  default: 0x0000, desc: This read-only function returns an unsigned integer value of the predicted remaining battery capacity expressed as percentage of FullChargeCapacity() with a range of 0% to 100%.}                
+    - StateOfHealth:                    { addr: 0x2E, type: uint8_t,  perm: R,  default: 0x0000, desc: This read-only function returns an unsigned integer value expressed as a percentage of the ratio of predicted FCC (25C SoH Load Rate) over the DesignCapacity(). The range is 0x00 to 0x64 for 0% to 100% respectively.}                
+    - ChargeVoltage:                    { addr: 0x30, type: uint16_t, perm: R,  default: 0x0000, desc: Returns the desired charging voltage in mV to the charger}                
+    - ChargeCurrent:                    { addr: 0x32, type: uint16_t, perm: R,  default: 0x0000, desc: Returns the desired charging current in mA to the charger}                
+    - DesignCapacity:                   { addr: 0x3C, type: uint16_t, perm: R,  default: 0x0000, desc: In SEALED and UNSEALED access This command returns the value stored in Design Capacity and is expressed in mAh. This is intended to be a theoretical or nominal capacity of a new pack but should have no bearing on the operation of the gas gauge functionality.}                
+    - AltManufacturerAccess:            { addr: 0x3E, type: uint16_t, perm: R,  default: 0x0000, desc: MAC Data block command}                
+    - MACData:                          { addr: 0x40, type: uint16_t, perm: R,  default: 0x0000, desc: MAC Data block}                
+    - SafetyAlert:                      { addr: 0x50, type: uint32_t, perm: R,  default: 0x0000, desc: This command returns the SafetyAlert flags on AltManufacturerAccess or MACData.}
+    - MACDataSum:                       { addr: 0x60, type: uint8_t,  perm: R,  default: 0x0000, desc: MAC Data block checksum}                
+    - MACDataLen:                       { addr: 0x61, type: uint8_t,  perm: R,  default: 0x0000, desc: MAC Data block length}                
+
+###########################################################################################################
+#                                   Fields                                                                #
+###########################################################################################################
+fields:
+    - DUMMY:  #create flags and fields in the DUMMY register
+          - BIT0: {mask: 0x0001, desc: creates a flag at bit 0 of the DUMMY register}
+          - BIT1: {mask: 0x0002, desc: creates a flag at bit 1 of the DUMMY register}
+          - REMAINING: 
+              mask: 0xFFFC
+              desc: creates a 14 bit field using the remaing bits
+              values:
+                - MIN: { val: 0, desc: creates a macro for the minimum 14 bit value}
+                - MAX: {val: 0x3FFF, desc: creates a macro for the maximum 14 bit value}
+    - ManufacturerAccess_ControlStatus: 
+        - SECURITY_Mode: 
+            mask: 0x6000
+            desc: Security Mode
+            vals:
+                - Reserved:                     {val: 0b00, desc: Reserved}
+                - Full_Access:                  {val: 0b01, desc: Full Access}
+                - Unsealed:                     {val: 0b10, desc: Unsealed}
+                - Sealed:                       {val: 0b11, desc: Sealed}
+        - AUTHCALM:
+            mask: 0x1000
+            desc: Automatic Calibration Mode
+            vals:
+                - Enabled:                      {val: 0x01, desc: Enabled}
+                - Disabled:                     {val: 0x00, desc: Disabled}
+        - CheckSumValid:
+            mask: 0x0200
+            desc: Checksum Valid
+            vals:
+                - Flash_Writes_Enabled:         {val: 0x01, desc: Flash Writes are enabled}
+                - Flash_Writes_Disabled:        {val: 0x00, desc: Flash Writes are disabled due to low voltage or PF condition}
+        - BTP_INT:
+            mask: 0x0080
+            desc: Battery Trip Point Interrupt. Setting and clearing this bit depends on various conditions
+            vals:
+                - Tripped :                     {val: 0x01, desc: See datasheet}
+                - Untripped:                    {val: 0x00, desc: See datasheet}
+        - LDMD:
+            mask: 0x0008
+            desc: LOAD Mode
+            vals:
+                - Constant_Power:               {val: 0x01, desc: Constant Power}
+                - Constant_Current:             {val: 0x00, desc: Constant Current}
+        - R_DIS:
+            mask: 0x0004
+            desc: Resistance Updates
+            vals:
+                - Disabled:                     {val: 0x01, desc: Disabled}
+                - Enabled:                      {val: 0x00, desc: Enabled}
+        - VOK:
+            mask: 0x0002
+            desc: Voltage OK for QMax Update
+            vals:
+                - Detected:                     {val: 0x01, desc: Detected}
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+        - QMax: {mask: 0x0001, desc: QMax Updates. This bit toggles after every QMax update.}
+    - BatteryStatus:                  
+        - Error_Code:
+            mask: 0x000F
+            desc: Error Code
+            vals:
+                - OK:                           {val: 0x00, desc: OK}
+                - Busy:                         {val: 0x01, desc: Busy}
+                - Reserved_Command:             {val: 0x02, desc: Reserved_Command}
+                - Unsupported_Command:          {val: 0x03, desc: Unsupported_Command}
+                - AccessDenied:                 {val: 0x04, desc: AccessDenied}
+                - Overflow_Underflow:           {val: 0x05, desc: Overflow_Underflow}
+                - BadSize:                      {val: 0x06, desc: BadSize}
+                - UnknownError:                 {val: 0x07, desc: UnknownError}
+        - FD:
+            mask: 0x0010
+            desc: Fully Discharged
+            vals:
+                - Battery_OK:                   {val: 0x00, desc: Battery OK}
+                - Battery_Fully_Depleted:       {val: 0x01, desc: Battery Fully Depleted}
+        - FC:
+            mask: 0x0020
+            desc: Fully Charged
+            vals:
+                - Battery_Not_Fully_Charged:    {val: 0x00, desc: Battery not fully charged}
+                - Battery_Fully_Charged:        {val: 0x01, desc: Battery fully charged}
+        - DSG:
+            mask: 0x0040
+            desc: Discharging
+            vals:
+                - Battery_Is_Charging:          {val: 0x00, desc: Battery is charging}
+                - Battery_Is_Discharging:       {val: 0x01, desc: Battery is discharging}
+        - INIT:
+            mask: 0x0080
+            desc: Initialization
+            vals:
+                - Inactive:                     {val: 0x00, desc: Inactive}
+                - Active:                       {val: 0x01, desc: Active}
+        - RTA:
+            mask: 0x0100
+            desc: Remaining Time Alarm
+            vals:
+                - Inactive:                     {val: 0x00, desc: Inactive}
+                - Active:                       {val: 0x01, desc: Active}
+        - RCA:
+            mask: 0x0200
+            desc: Remaining Capacity Alarm
+            vals:
+                - Inactive:                     {val: 0x00, desc: Inactive}
+                - Active:                       {val: 0x01, desc: Active}
+        - TDA:
+            mask: 0x0800
+            desc: Terminate Discharge Alarm
+            vals:
+                - Inactive:                     {val: 0x00, desc: Inactive}
+                - Active:                       {val: 0x01, desc: Active}
+        - OTA:
+            mask: 0x1000
+            desc: Overtemperature Alarm
+            vals:
+                - Inactive:                     {val: 0x00, desc: Inactive}
+                - Active:                       {val: 0x01, desc: Active}
+        - TCA:
+            mask: 0x4000
+            desc: Terminate Charge Alarm
+            vals:
+                - Inactive:                     {val: 0x00, desc: Inactive}
+                - Active:                       {val: 0x01, desc: Active}
+        - OCA:
+            mask: 0x8000
+            desc: Overcharged Alarm
+            vals:
+                - Inactive:                     {val: 0x00, desc: Inactive}
+                - Active:                       {val: 0x01, desc: Active}
+    - SafetyAlert:
+        - UTD:
+            mask: 0x08000000
+            desc: Undertemperature During Discharge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - UTC:
+            mask: 0x04000000
+            desc: Undertemperature During Charge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - CTOS:
+            mask: 0x00200000
+            desc: Charge Timeout Suspend
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - PTOS:
+            mask: 0x00080000
+            desc: Precharge Timeout Suspend
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - OTD:
+            mask: 0x0002000
+            desc: Overtemperature During Discharge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - OTC:
+            mask: 0x00001000
+            desc: Overtemperature During Charge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - ASCD:
+            mask: 0x00000400
+            desc: Short-Circuit During Discharge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - ASCC:
+            mask: 0x00000100
+            desc: Short-Circuit During Charge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - AOLD:
+            mask: 0x00000040
+            desc: Overload During Discharge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - OCD:
+            mask: 0x00000010
+            desc: Overcurrent During Discharge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - OCC:
+            mask: 0x00000004
+            desc: Overcurrent During Charge
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - COV:
+            mask: 0x00000002
+            desc: Cell Overvoltage
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        - CUV:
+            mask: 0x00000001
+            desc: Cell Undervoltage
+            vals:
+                - Not_Detected:                 {val: 0x00, desc: Not Detected}
+                - Detected:                     {val: 0x01, desc: Detected}
+        
+###########################################################################################################
+#                                   Preset Configs                                                        #
+###########################################################################################################
+configs:
+    - DUMMY: {BIT0: 0, BIT1: 1, REMAINING: 0xAA}
+
+
+
+
