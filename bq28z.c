@@ -78,15 +78,15 @@ mrt_status_t bq28z_init_i2c(bq28z_t* dev, mrt_i2c_handle_t i2c)
 
 mrt_status_t bq28z_test(bq28z_t* dev)
 {
-	int16_t temperature;
-	int16_t current;
-	uint16_t voltage;
-
     mrt_status_t status = MRT_STATUS_ERROR;
+
     /*user-block-test-start*/
-    temperature = bq28z_get_temperature(dev);
-    current = bq28z_get_averagecurrent(dev);
-    voltage = bq28z_get_voltage(dev);
+    uint16_t voltage = bq28z_get_voltage(dev);
+
+    if(voltage > 0)
+    {
+        status = MRT_STATUS_OK;
+    }
     /*user-block-test-end*/
     return status;
 }
