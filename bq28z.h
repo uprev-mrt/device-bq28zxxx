@@ -99,6 +99,19 @@ mrt_status_t bq28z_test(bq28z_t* dev);
 
 
 /*user-block-bottom-start*/
+
+/**
+  *@brief unseal memory
+  *@param dev ptr to BQ28Z device
+  */
+mrt_status_t bq28z_unseal(bq28z_t* dev);
+
+/**
+  *@brief unseal memory
+  *@param dev ptr to BQ28Z device
+  */
+mrt_status_t bq28z_seal(bq28z_t* dev);
+
 /*user-block-bottom-end*/
 
 #ifdef __cplusplus
