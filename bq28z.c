@@ -56,8 +56,8 @@ static mrt_status_t bq28z_init(bq28z_t* dev)
     /*user-block-init-start*/
     // this is the stuff that I added
 
-    bq28z_set_btpchargeset(dev, 1000);
-    bq28z_set_btpdischargeset(dev,1000);
+    //bq28z_set_btpchargeset(dev, 1000);
+    //bq28z_set_btpdischargeset(dev,1000);
     /*user-block-init-end*/
 
     return MRT_STATUS_OK;
