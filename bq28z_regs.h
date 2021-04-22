@@ -8,6 +8,7 @@
 
 #define BQ28Z_I2C_ADDRESS 0xAA
 #define BQ28Z_REG_ADDR_SIZE 1
+#define BQ28Z_REG_COUNT 33
 
 
 /*******************************************************************************

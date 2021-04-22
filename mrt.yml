@@ -3,7 +3,7 @@ name: BQ28Z
 author: Jason Berger
 created: 01/30/2020
 category: Device/Power
-requires: []
+requires: [Platform,RegDev]
 description: Battery Fuel Gauge
 datasheet: http://www.ti.com/lit/ds/symlink/bq28z610.pdf
 docs:
