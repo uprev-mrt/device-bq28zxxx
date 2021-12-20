@@ -8,6 +8,6 @@ description: Battery Fuel Gauge
 datasheet: http://www.ti.com/lit/ds/symlink/bq28z610.pdf
 docs:
   - manual: http://www.ti.com/general/docs/lit/getliterature.tsp?baseLiteratureNumber=sluua65&fileType=pdf
-mfg: Texas Instruments
-mfg_pn: BQ28Z610DRZT
+mfr: Texas Instruments
+mfr_pn: BQ28Z610DRZT
 digikey_pn: 296-43394-1-ND
